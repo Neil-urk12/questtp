@@ -5,7 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -26,7 +26,11 @@ var getCmd = &cobra.Command{
 	// 	Long: `A longer description that spans multiple lines and likely contains examples
 	// and usage of using your command.,
 	Run: func(cmd *cobra.Command, args []string) {
-		client := &http.Client{}
+		client := &http.Client{
+			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+				return http.ErrUseLastResponse
+			},
+		}
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			fmt.Println("Error creating request:", err)
@@ -55,7 +59,7 @@ var getCmd = &cobra.Command{
 
 		defer resp.Body.Close()
 
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			fmt.Println("Error reading response body: ", err)
 			return
