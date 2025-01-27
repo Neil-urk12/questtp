@@ -28,7 +28,7 @@ var postCmd = &cobra.Command{
 
 		client := &http.Client{}
 
-		req, err := http.NewRequest("POST", url, nil)
+		req, err := http.NewRequest("POST", url, strings.NewReader(postBody))
 		if err != nil {
 			fmt.Println("Error creating request: ", err)
 			return
